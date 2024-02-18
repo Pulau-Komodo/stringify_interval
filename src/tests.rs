@@ -238,9 +238,9 @@ mod tests {
 	}
 	fn text_clocklike() -> Text {
 		let mut text = Text::default();
-		text.hours = ThresholdMap::with_capacity(0, String::from(""));
-		text.minutes = ThresholdMap::with_capacity(0, String::from(""));
-		text.seconds = ThresholdMap::with_capacity(0, String::from(""));
+		text.hours = ThresholdMap::single_value("");
+		text.minutes = ThresholdMap::single_value("");
+		text.seconds = ThresholdMap::single_value("");
 		text.spacer = String::from("");
 		text.joiner = String::from(":");
 		text.final_joiner = None;

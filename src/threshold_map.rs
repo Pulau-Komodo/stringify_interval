@@ -6,6 +6,10 @@ pub struct ThresholdMap<T> {
 }
 
 impl<T> ThresholdMap<T> {
+	/// A map that will return the same value for any input.
+	pub fn single_value<I: Into<T>>(value: I) -> Self {
+		Self::with_capacity(0, value.into())
+	}
 	/// Capacity is the number of thresholds, not the number of values.
 	pub fn with_capacity(capacity: usize, lowest_value: T) -> Self {
 		let thresholds = Vec::with_capacity(capacity);
