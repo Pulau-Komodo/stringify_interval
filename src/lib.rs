@@ -85,10 +85,8 @@ pub fn stringify_interval(
 			count
 				.try_into()
 				.map_err(|_| StringifyError::NumberOutOfRange)?,
-			&text.spacer,
 			labels,
-			&text.joiner,
-			text.final_joiner.as_deref(),
+			&text,
 			config.unwrap().pad,
 		);
 		remaining_elements -= 1;
@@ -101,24 +99,17 @@ fn print_unit(
 	output: &mut String,
 	remaining_elements: usize,
 	count: u32,
-	spacer: &str,
 	label: &ThresholdMap<String>,
-	joiner: &str,
-	final_joiner: Option<&str>,
+	text: &Text,
 	pad: u8,
 ) {
-	let joiner = match final_joiner {
-		Some(final_joiner) if remaining_elements == 2 => final_joiner,
-		_ if remaining_elements == 1 => "",
-		_ => joiner,
-	};
 	write!(
 		output,
 		"{}{}{:0pad$}{}",
 		count,
-		spacer,
+		text.spacer,
 		label.get(count),
-		joiner,
+		text.get_joiner(remaining_elements),
 		pad = pad as usize
 	)
 	.unwrap();

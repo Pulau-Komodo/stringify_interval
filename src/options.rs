@@ -17,6 +17,13 @@ pub struct Text {
 }
 
 impl Text {
+	pub(crate) fn get_joiner(&self, remaining_elements: usize) -> &str {
+		match self.final_joiner.as_deref() {
+			Some(final_joiner) if remaining_elements == 2 => final_joiner,
+			_ if remaining_elements == 1 => "",
+			_ => &self.joiner,
+		}
+	}
 	pub(crate) fn iter_units(&self) -> impl Iterator<Item = &ThresholdMap<String>> {
 		[
 			&self.years,
