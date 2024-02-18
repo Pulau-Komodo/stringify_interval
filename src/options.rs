@@ -141,6 +141,45 @@ impl DisplayConfig {
 			seconds: Some(DisplaySettings::new(0..600, 0, false)),
 		}
 	}
+	pub fn none() -> Self {
+		Self {
+			years: None,
+			months: None,
+			weeks: None,
+			days: None,
+			hours: None,
+			minutes: None,
+			seconds: None,
+		}
+	}
+	pub fn with_years(mut self) -> Self {
+		self.years = Some(DisplaySettings::new(0.., 0, false));
+		self
+	}
+	pub fn with_months(mut self) -> Self {
+		self.months = Some(DisplaySettings::new(0.., 0, false));
+		self
+	}
+	pub fn with_weeks(mut self) -> Self {
+		self.weeks = Some(DisplaySettings::new(0.., 0, false));
+		self
+	}
+	pub fn with_days(mut self) -> Self {
+		self.days = Some(DisplaySettings::new(0.., 0, false));
+		self
+	}
+	pub fn with_hours(mut self) -> Self {
+		self.hours = Some(DisplaySettings::new(0.., 0, false));
+		self
+	}
+	pub fn with_minutes(mut self) -> Self {
+		self.minutes = Some(DisplaySettings::new(0.., 0, false));
+		self
+	}
+	pub fn with_seconds(mut self) -> Self {
+		self.seconds = Some(DisplaySettings::new(0.., 0, false));
+		self
+	}
 }
 
 impl Default for DisplayConfig {
