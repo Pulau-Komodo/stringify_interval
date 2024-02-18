@@ -214,8 +214,10 @@ fn get_years_months_remainder(
 		.months
 		.is_some_and(|month| month.range.contains(months));
 
+	let (mut output_years, mut output_months, mut output_remainder) = (None, None, interval);
+
 	match (should_round, enable_years, enable_months) {
-		(_, false, false) => Some((None, None, interval)), // Neither ends up displayed
+		(_, false, false) => (), // Neither ends up displayed
 		(false, true, false) => {
 			// Only years
 			let months = Months::new(years * 12);
@@ -225,21 +227,21 @@ fn get_years_months_remainder(
 				start_date.checked_add_months(months)?
 			};
 			let remaining_interval = interval - (start_date - adjusted_date).abs();
-			Some((Some(years as u64), None, remaining_interval))
+			output_years = Some(years as u64);
+			output_remainder = remaining_interval;
 		}
 		(false, false, true) => {
 			// Only months
 			let remaining_interval = interval - (start_date - adjusted_date).abs();
-			Some((None, Some(months as u64), remaining_interval))
+			output_months = Some(months as u64);
+			output_remainder = remaining_interval;
 		}
 		(false, true, true) => {
 			// Both years and months
 			let remaining_interval = interval - (start_date - adjusted_date).abs();
-			Some((
-				Some(years as u64),
-				Some(months as u64 % 12),
-				remaining_interval,
-			))
+			output_years = Some(years as u64);
+			output_months = Some(months as u64 % 12);
+			output_remainder = remaining_interval;
 		}
 		(true, true, false) => {
 			// Only years and round to them
@@ -266,27 +268,29 @@ fn get_years_months_remainder(
 			if is_one_year_further_closer(target_date, adjusted_date, in_past)? {
 				years += 1;
 			}
-			Some((Some(years as u64), None, Duration::zero()))
+			output_years = Some(years as u64);
+			output_remainder = Duration::zero();
 		}
 		(true, false, true) => {
 			// Only months and round to them
 			if is_one_month_further_closer(target_date, adjusted_date, in_past)? {
 				months += 1;
 			}
-			Some((None, Some(months as u64), Duration::zero()))
+			output_months = Some(months as u64);
+			output_remainder = Duration::zero();
 		}
 		(true, true, true) => {
 			// Years and months and round to months
 			if is_one_month_further_closer(target_date, adjusted_date, in_past)? {
 				months += 1;
 			}
-			Some((
-				Some(months as u64 / 12),
-				Some(months as u64 % 12),
-				Duration::zero(),
-			))
+			output_years = Some(months as u64 / 12);
+			output_months = Some(months as u64 % 12);
+			output_remainder = Duration::zero();
 		}
-	}
+	};
+
+	Some((output_years, output_months, output_remainder))
 }
 
 fn is_n_months_further_closer(
