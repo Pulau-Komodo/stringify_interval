@@ -74,8 +74,7 @@ pub(crate) fn stringify_interval(
 		.zip(config.iter())
 		.enumerate()
 	{
-		*enabled =
-			*enabled && (*count > 0 || config.unwrap().display_zero) || i == smallest_enabled;
+		*enabled = *enabled && config.unwrap().display(*count) || i == smallest_enabled;
 	}
 
 	let mut remaining_elements = enabled.0.iter().filter(|e| **e).count();

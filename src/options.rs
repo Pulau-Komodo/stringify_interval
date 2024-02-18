@@ -101,6 +101,10 @@ impl DisplaySettings {
 			display_zero,
 		}
 	}
+	/// Whether the number is non-zero or `display_zero is true. Does not check range.
+	pub(crate) fn display(&self, number: u64) -> bool {
+		number > 0 || self.display_zero
+	}
 }
 
 #[derive(Debug, Clone)]
