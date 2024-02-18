@@ -211,7 +211,7 @@ fn get_years_months_remainder(
 
 	let enable_years = config.years.is_some_and(|year| year.range.contains(years));
 	let enable_months = config
-		.years
+		.months
 		.is_some_and(|month| month.range.contains(months));
 
 	match (should_round, enable_years, enable_months) {

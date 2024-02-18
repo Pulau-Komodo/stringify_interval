@@ -137,7 +137,7 @@ mod tests {
 				Duration::seconds(50_000_000),
 				date_year_month_day(1950, 1, 1),
 				DisplayConfig::default(),
-				Text::default()
+				Text::default(),
 			),
 			Ok(String::from(
 				"1 year, 7 months, 1 day, 16 hours and 53 minutes"
@@ -151,11 +151,34 @@ mod tests {
 				Duration::seconds(-50_000_000),
 				date_year_month_day(1950, 1, 1),
 				DisplayConfig::default(),
-				Text::default()
+				Text::default(),
 			),
 			Ok(String::from(
 				"1 year, 6 months, 29 days, 16 hours and 53 minutes"
 			)),
+		)
+	}
+
+	#[test]
+	fn months_only() {
+		assert_eq!(
+			with_date(
+				Duration::seconds(50_000_000),
+				date_year_month_day(2020, 1, 1),
+				DisplayConfig::none().with_months(),
+				Text::default(),
+			), Ok(String::from("19 months"))
+		)
+	}
+	#[test]
+	fn months_only_neg() {
+		assert_eq!(
+			with_date(
+				Duration::seconds(-50_000_000),
+				date_year_month_day(2020, 1, 1),
+				DisplayConfig::none().with_months(),
+				Text::default(),
+			), Ok(String::from("19 months"))
 		)
 	}
 }
