@@ -75,12 +75,12 @@ pub(crate) fn stringify_interval(
 	{
 		print_unit(
 			&mut output,
-			remaining_elements,
 			count
 				.try_into()
 				.map_err(|_| StringifyError::NumberOutOfRange)?,
+			&text.spacer,
 			labels,
-			&text,
+			text.get_joiner(remaining_elements),
 			config.unwrap().pad,
 		);
 		remaining_elements -= 1;
@@ -91,19 +91,19 @@ pub(crate) fn stringify_interval(
 
 fn print_unit(
 	output: &mut String,
-	remaining_elements: usize,
 	count: u32,
+	spacer: &str,
 	label: &ThresholdMap<String>,
-	text: &Text,
+	joiner: &str,
 	pad: u8,
 ) {
 	write!(
 		output,
 		"{}{}{:0pad$}{}",
 		count,
-		text.spacer,
+		spacer,
 		label.get(count),
-		text.get_joiner(remaining_elements),
+		joiner,
 		pad = pad as usize
 	)
 	.unwrap();
