@@ -103,6 +103,7 @@ impl DisplaySettings {
 	}
 }
 
+/// The display settings for each unit, including years and months.
 #[derive(Debug, Clone)]
 pub struct DisplayConfig {
 	pub years: Option<DisplaySettings>,
@@ -192,6 +193,74 @@ impl Default for DisplayConfig {
 			hours: Some(DisplaySettings::new(0.., 0, false)),
 			minutes: Some(DisplaySettings::new(0.., 0, false)),
 			seconds: Some(DisplaySettings::new(0..600, 0, false)),
+		}
+	}
+}
+
+/// The display settings for each constant unit (so no years or months).
+#[derive(Debug, Clone)]
+pub struct DisplayConfigConstant {
+	pub weeks: Option<DisplaySettings>,
+	pub days: Option<DisplaySettings>,
+	pub hours: Option<DisplaySettings>,
+	pub minutes: Option<DisplaySettings>,
+	pub seconds: Option<DisplaySettings>,
+}
+
+impl DisplayConfigConstant {
+	pub fn none() -> Self {
+		Self {
+			weeks: None,
+			days: None,
+			hours: None,
+			minutes: None,
+			seconds: None,
+		}
+	}
+	pub fn with_weeks(mut self) -> Self {
+		self.weeks = Some(DisplaySettings::new(0.., 0, false));
+		self
+	}
+	pub fn with_days(mut self) -> Self {
+		self.days = Some(DisplaySettings::new(0.., 0, false));
+		self
+	}
+	pub fn with_hours(mut self) -> Self {
+		self.hours = Some(DisplaySettings::new(0.., 0, false));
+		self
+	}
+	pub fn with_minutes(mut self) -> Self {
+		self.minutes = Some(DisplaySettings::new(0.., 0, false));
+		self
+	}
+	pub fn with_seconds(mut self) -> Self {
+		self.seconds = Some(DisplaySettings::new(0.., 0, false));
+		self
+	}
+}
+
+impl Default for DisplayConfigConstant {
+	fn default() -> Self {
+		Self {
+			weeks: None,
+			days: Some(DisplaySettings::new(0.., 0, false)),
+			hours: Some(DisplaySettings::new(0.., 0, false)),
+			minutes: Some(DisplaySettings::new(0.., 0, false)),
+			seconds: Some(DisplaySettings::new(0..600, 0, false)),
+		}
+	}
+}
+
+impl From<DisplayConfigConstant> for DisplayConfig {
+	fn from(value: DisplayConfigConstant) -> Self {
+		Self {
+			years: None,
+			months: None,
+			weeks: value.weeks,
+			days: value.days,
+			hours: value.hours,
+			minutes: value.minutes,
+			seconds: value.seconds,
 		}
 	}
 }

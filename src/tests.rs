@@ -3,7 +3,7 @@ mod tests {
 	use chrono::{DateTime, Duration, NaiveDate, NaiveTime, Utc};
 
 	use crate::{
-		options::{DisplayConfig, DisplaySettings, Text},
+		options::{DisplayConfig, DisplayConfigConstant, DisplaySettings, Text},
 		threshold_map::ThresholdMap,
 		with_date, without_date,
 	};
@@ -20,7 +20,7 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::minutes(2),
-				DisplayConfig::default_no_inconstant(),
+				DisplayConfigConstant::default(),
 				Text::default(),
 			),
 			Ok(String::from("2 minutes"))
@@ -31,7 +31,7 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(500),
-				DisplayConfig::default_no_inconstant(),
+				DisplayConfigConstant::default(),
 				Text::default(),
 			),
 			Ok(String::from("8 minutes and 20 seconds"))
@@ -42,7 +42,7 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(-5_000),
-				DisplayConfig::default_no_inconstant(),
+				DisplayConfigConstant::default(),
 				Text::default(),
 			),
 			Ok(String::from("1 hour and 23 minutes"))
@@ -53,7 +53,7 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(50_000),
-				DisplayConfig::default_no_inconstant(),
+				DisplayConfigConstant::default(),
 				Text::default(),
 			),
 			Ok(String::from("13 hours and 53 minutes"))
@@ -64,7 +64,7 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(-500_000),
-				DisplayConfig::default_no_inconstant(),
+				DisplayConfigConstant::default(),
 				Text::default(),
 			),
 			Ok(String::from("5 days, 18 hours and 53 minutes"))
@@ -75,7 +75,7 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(5_000_000),
-				DisplayConfig::default_no_inconstant(),
+				DisplayConfigConstant::default(),
 				Text::default(),
 			),
 			Ok(String::from("57 days, 20 hours and 53 minutes"))
@@ -86,7 +86,7 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(50_000_000),
-				DisplayConfig::default_no_inconstant(),
+				DisplayConfigConstant::default(),
 				Text::default(),
 			),
 			Ok(String::from("578 days, 16 hours and 53 minutes"))
@@ -97,15 +97,15 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(-50_000_000),
-				DisplayConfig::default_no_inconstant(),
+				DisplayConfigConstant::default(),
 				Text::default(),
 			),
 			Ok(String::from("578 days, 16 hours and 53 minutes"))
 		);
 	}
 
-	fn config_weeks_seconds() -> DisplayConfig {
-		DisplayConfig::none().with_weeks().with_seconds()
+	fn config_weeks_seconds() -> DisplayConfigConstant {
+		DisplayConfigConstant::none().with_weeks().with_seconds()
 	}
 	#[test]
 	fn weeks_and_seconds() {
@@ -119,10 +119,8 @@ mod tests {
 		);
 	}
 
-	fn config_weeks_minutes_seconds() -> DisplayConfig {
-		DisplayConfig {
-			years: None,
-			months: None,
+	fn config_weeks_minutes_seconds() -> DisplayConfigConstant {
+		DisplayConfigConstant {
 			weeks: Some(DisplaySettings::new(0.., 0, false)),
 			days: None,
 			hours: None,
@@ -236,10 +234,8 @@ mod tests {
 		)
 	}
 
-	fn config_clocklike() -> DisplayConfig {
-		DisplayConfig {
-			years: None,
-			months: None,
+	fn config_clocklike() -> DisplayConfigConstant {
+		DisplayConfigConstant {
 			weeks: None,
 			days: None,
 			hours: Some(DisplaySettings::new(0.., 2, true)),
@@ -281,7 +277,7 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::zero(),
-				DisplayConfig::default_no_inconstant(),
+				DisplayConfigConstant::default(),
 				Text::default()
 			),
 			Ok(String::from("0 seconds"))

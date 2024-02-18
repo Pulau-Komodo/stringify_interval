@@ -1,7 +1,7 @@
 use chrono::{DateTime, Duration, Utc};
 
 use errors::StringifyError;
-use options::{DisplayConfig, Text};
+use options::{DisplayConfig, DisplayConfigConstant, Text};
 use stringify::stringify_interval;
 
 mod errors;
@@ -13,10 +13,10 @@ mod util;
 
 pub fn without_date(
 	interval: Duration,
-	config: DisplayConfig,
+	config: DisplayConfigConstant,
 	text: Text,
 ) -> Result<String, StringifyError> {
-	stringify_interval(interval, None, config, text)
+	stringify_interval(interval, None, config.into(), text)
 }
 
 pub fn with_date(

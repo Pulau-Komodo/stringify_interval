@@ -29,7 +29,7 @@ pub(crate) fn stringify_interval(
 	let mut counts = Counts(UnitValues::<u64>::default());
 
 	if config.has_inconstant_enabled() {
-		let date = get_date.ok_or(StringifyError::InconstantWithoutDate)?();
+		let date = get_date.unwrap()();
 		let (years, months, remainder) =
 			get_years_months_remainder(date, interval, in_past, round_to_months_or_years, &config)
 				.ok_or(StringifyError::NumberOutOfRange)?;
