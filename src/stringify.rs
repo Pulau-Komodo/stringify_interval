@@ -173,7 +173,11 @@ fn get_years_months_remainder(
 	should_round: bool,
 	config: &DisplayConfig,
 ) -> Option<(Option<u64>, Option<u64>, Duration)> {
-	let target_date = start_date.checked_add_signed(interval)?;
+	let target_date = if in_past {
+		start_date.checked_sub_signed(interval)?
+	} else {
+		start_date.checked_add_signed(interval)?
+	};
 
 	let (larger_date, smaller_date) = if in_past {
 		(start_date, target_date)
