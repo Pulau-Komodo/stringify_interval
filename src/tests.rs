@@ -16,6 +16,17 @@ mod tests {
 	}
 
 	#[test]
+	fn two_minutes() {
+		assert_eq!(
+			without_date(
+				Duration::minutes(2),
+				DisplayConfig::default_no_inconstant(),
+				Text::default(),
+			),
+			Ok(String::from("2 minutes"))
+		);
+	}
+	#[test]
 	fn standard_a() {
 		assert_eq!(
 			without_date(

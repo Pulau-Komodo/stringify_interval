@@ -26,7 +26,7 @@ pub(crate) fn stringify_interval(
 			true
 		};
 
-	let mut counts = UnitValues::<u64>::default();
+	let mut counts = Counts(UnitValues::<u64>::default());
 
 	if config.has_inconstant_enabled() {
 		let date = get_date.ok_or(StringifyError::InconstantWithoutDate)?();
@@ -35,52 +35,23 @@ pub(crate) fn stringify_interval(
 				.ok_or(StringifyError::NumberOutOfRange)?;
 		if let Some(years) = years {
 			enabled.0.years = true;
-			counts.years = years;
+			counts.0.years = years;
 		}
 		if let Some(months) = months {
 			enabled.0.months = true;
-			counts.months = months;
+			counts.0.months = months;
 		}
 		interval = remainder;
 	};
 
-	let mut seconds = interval.num_seconds() as u64;
-	for (count, seconds_per) in counts
-		.iter_mut()
-		.zip(SECONDS_PER.iter())
-		.zip(enabled.0.iter())
-		.skip(2)
-		.filter_map(|(v, enabled)| enabled.then_some(v))
-	{
-		*count += seconds / seconds_per;
-		seconds %= seconds_per;
-	}
-	if seconds != 0 {
-		eprintln!("Something went wrong with rounding.");
-	}
-
-	let smallest_enabled = enabled
-		.0
-		.iter()
-		.enumerate()
-		.rev()
-		.find_map(|(i, e)| e.then_some(i))
-		.ok_or(StringifyError::NoUnitsEnabled)?;
-
-	for (i, ((enabled, count), config)) in enabled
-		.0
-		.iter_mut()
-		.zip(counts.iter())
-		.zip(config.iter())
-		.enumerate()
-	{
-		*enabled = *enabled && config.unwrap().display(*count) || i == smallest_enabled;
-	}
+	counts.split_duration(interval, &enabled);
+	enabled.filter_zeroes(&counts, &config)?;
 
 	let mut remaining_elements = enabled.0.iter().filter(|e| **e).count();
 
 	let mut output = String::new();
 	for (&count, labels, config) in counts
+		.0
 		.iter()
 		.zip(text.iter_units())
 		.zip(config.iter())
@@ -163,6 +134,64 @@ impl EnabledUnits {
 			return None;
 		};
 		Some(rounded)
+	}
+	/// Sets all the units disabled that have 0 values and shouldn't display at 0. If that would disable all units, leave the smallest enabled.
+	fn filter_zeroes(
+		&mut self,
+		counts: &Counts,
+		config: &DisplayConfig,
+	) -> Result<(), StringifyError> {
+		let smallest_enabled = self
+			.0
+			.iter()
+			.enumerate()
+			.rev()
+			.find_map(|(i, e)| e.then_some(i))
+			.ok_or(StringifyError::NoUnitsEnabled)?;
+
+		let mut any_enabled = false;
+
+		for (enabled, count, config) in self
+			.0
+			.iter_mut()
+			.zip(counts.0.iter())
+			.zip(config.iter())
+			.filter_map(|((e, ct), cfg)| e.then_some((e, ct, cfg)))
+		{
+			*enabled = *count > 0 || config.unwrap().display_zero;
+			if *enabled {
+				any_enabled = true;
+			}
+		}
+
+		if !any_enabled {
+			*self.0.iter_mut().nth(smallest_enabled).unwrap() = true;
+		}
+
+		Ok(())
+	}
+}
+
+struct Counts(UnitValues<u64>);
+
+impl Counts {
+	/// Allocate the remaining duration across the enabled constant units.
+	fn split_duration(&mut self, interval: Duration, enabled: &EnabledUnits) {
+		let mut seconds = interval.num_seconds() as u64;
+		for (count, seconds_per) in self
+			.0
+			.iter_mut()
+			.zip(SECONDS_PER.iter())
+			.zip(enabled.0.iter())
+			.skip(2)
+			.filter_map(|(v, enabled)| enabled.then_some(v))
+		{
+			*count += seconds / seconds_per;
+			seconds %= seconds_per;
+		}
+		if seconds != 0 {
+			eprintln!("Something went wrong with rounding.");
+		}
 	}
 }
 
