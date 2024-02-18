@@ -4,4 +4,6 @@ pub enum StringifyError {
 	InconstantWithoutDate,
 	#[error("Some operation overflowed or some number conversion failed")]
 	NumberOutOfRange,
+	#[error("No units were enabled")]
+	NoUnitsEnabled,
 }

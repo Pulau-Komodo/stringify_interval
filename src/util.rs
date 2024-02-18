@@ -10,7 +10,9 @@ pub(crate) struct UnitValues<T> {
 }
 
 impl<T> UnitValues<T> {
-	pub(crate) fn iter(&self) -> impl Iterator<Item = &T> {
+	pub(crate) fn iter(
+		&self,
+	) -> impl Iterator<Item = &T> + ExactSizeIterator + DoubleEndedIterator {
 		[
 			&self.years,
 			&self.months,

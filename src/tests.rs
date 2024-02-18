@@ -264,4 +264,40 @@ mod tests {
 			Ok(String::from("00:01:00"))
 		)
 	}
+
+	#[test]
+	fn zero_duration() {
+		assert_eq!(
+			without_date(
+				Duration::zero(),
+				DisplayConfig::default_no_inconstant(),
+				Text::default()
+			),
+			Ok(String::from("0 seconds"))
+		)
+	}
+	#[test]
+	fn zero_duration_months() {
+		assert_eq!(
+			with_date(
+				Duration::zero(),
+				date_year_month_day(2000, 1, 1),
+				DisplayConfig::none().with_months(),
+				Text::default()
+			),
+			Ok(String::from("0 months"))
+		)
+	}
+	#[test]
+	fn zero_duration_years() {
+		assert_eq!(
+			with_date(
+				Duration::zero(),
+				date_year_month_day(2000, 1, 1),
+				DisplayConfig::none().with_years(),
+				Text::default()
+			),
+			Ok(String::from("0 years"))
+		)
+	}
 }

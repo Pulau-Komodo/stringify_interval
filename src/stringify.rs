@@ -59,8 +59,23 @@ pub(crate) fn stringify_interval(
 		eprintln!("Something went wrong with rounding.");
 	}
 
-	for ((enabled, count), config) in enabled.0.iter_mut().zip(counts.iter()).zip(config.iter()) {
-		*enabled = *enabled && (*count > 0 || config.unwrap().display_zero);
+	let smallest_enabled = enabled
+		.0
+		.iter()
+		.enumerate()
+		.rev()
+		.find_map(|(i, e)| e.then_some(i))
+		.ok_or(StringifyError::NoUnitsEnabled)?;
+
+	for (i, ((enabled, count), config)) in enabled
+		.0
+		.iter_mut()
+		.zip(counts.iter())
+		.zip(config.iter())
+		.enumerate()
+	{
+		*enabled =
+			*enabled && (*count > 0 || config.unwrap().display_zero) || i == smallest_enabled;
 	}
 
 	let mut remaining_elements = enabled.0.iter().filter(|e| **e).count();
