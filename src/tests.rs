@@ -4,6 +4,7 @@ mod tests {
 
 	use crate::{
 		options::{DisplayConfig, DisplaySettings, Text},
+		threshold_map::ThresholdMap,
 		with_date, without_date,
 	};
 
@@ -167,7 +168,8 @@ mod tests {
 				date_year_month_day(2020, 1, 1),
 				DisplayConfig::none().with_months(),
 				Text::default(),
-			), Ok(String::from("19 months"))
+			),
+			Ok(String::from("19 months"))
 		)
 	}
 	#[test]
@@ -178,7 +180,88 @@ mod tests {
 				date_year_month_day(2020, 1, 1),
 				DisplayConfig::none().with_months(),
 				Text::default(),
-			), Ok(String::from("19 months"))
+			),
+			Ok(String::from("19 months"))
+		)
+	}
+
+	fn config_with_zeroes() -> DisplayConfig {
+		DisplayConfig {
+			years: Some(DisplaySettings::new(0.., 0, true)),
+			months: Some(DisplaySettings::new(0.., 0, true)),
+			weeks: None,
+			days: Some(DisplaySettings::new(0.., 0, true)),
+			hours: Some(DisplaySettings::new(0.., 0, true)),
+			minutes: Some(DisplaySettings::new(0.., 0, true)),
+			seconds: Some(DisplaySettings::new(0..600, 0, true)),
+		}
+	}
+	#[test]
+	fn with_zeroes() {
+		assert_eq!(
+			with_date(
+				Duration::days(15),
+				date_year_month_day(2020, 1, 1),
+				config_with_zeroes(),
+				Text::default(),
+			),
+			Ok(String::from(
+				"0 years, 0 months, 15 days, 0 hours and 0 minutes"
+			))
+		)
+	}
+	#[test]
+	fn with_zeroes_long() {
+		assert_eq!(
+			with_date(
+				Duration::seconds(32918400),
+				date_year_month_day(2020, 1, 1),
+				config_with_zeroes(),
+				Text::default(),
+			),
+			Ok(String::from(
+				"1 year, 0 months, 15 days, 0 hours and 0 minutes"
+			))
+		)
+	}
+
+	fn config_clocklike() -> DisplayConfig {
+		DisplayConfig {
+			years: None,
+			months: None,
+			weeks: None,
+			days: None,
+			hours: Some(DisplaySettings::new(0.., 2, true)),
+			minutes: Some(DisplaySettings::new(0.., 2, true)),
+			seconds: Some(DisplaySettings::new(0.., 2, true)),
+		}
+	}
+	fn text_clocklike() -> Text {
+		let mut text = Text::default();
+		text.hours = ThresholdMap::with_capacity(0, String::from(""));
+		text.minutes = ThresholdMap::with_capacity(0, String::from(""));
+		text.seconds = ThresholdMap::with_capacity(0, String::from(""));
+		text.spacer = String::from("");
+		text.joiner = String::from(":");
+		text.final_joiner = None;
+		text
+	}
+	#[test]
+	fn clocklike() {
+		assert_eq!(
+			without_date(
+				Duration::days(3) + Duration::hours(2) + Duration::seconds(1),
+				config_clocklike(),
+				text_clocklike(),
+			),
+			Ok(String::from("74:00:01"))
+		)
+	}
+	#[test]
+	fn clocklike_minute() {
+		assert_eq!(
+			without_date(Duration::minutes(1), config_clocklike(), text_clocklike(),),
+			Ok(String::from("00:01:00"))
 		)
 	}
 }

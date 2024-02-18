@@ -99,7 +99,7 @@ fn print_unit(
 ) {
 	write!(
 		output,
-		"{}{}{:0pad$}{}",
+		"{:0pad$}{}{}{}",
 		count,
 		spacer,
 		label.get(count),
