@@ -65,15 +65,11 @@ pub fn stringify_interval(
 		eprintln!("Something went wrong with rounding.");
 	}
 
-	let mut remaining_elements = enabled
-		.0
-		.iter()
-		.zip(counts.iter())
-		.zip(config.iter())
-		.filter(|((enabled, count), config)| {
-			**enabled && (**count > 0 || config.unwrap().display_zero)
-		})
-		.count();
+	for ((enabled, count), config) in enabled.0.iter_mut().zip(counts.iter()).zip(config.iter()) {
+		*enabled = *enabled && (*count > 0 || config.unwrap().display_zero);
+	}
+
+	let mut remaining_elements = enabled.0.iter().filter(|e| **e).count();
 
 	let mut output = String::new();
 	for (&count, labels, config) in counts
