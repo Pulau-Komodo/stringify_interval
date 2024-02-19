@@ -4,13 +4,15 @@ Years and months can be displayed, but they will need some date as a reference p
 
 It is fairly configurable.
 
+The public API is very much up for debate and subject to change.
+
 ## Usage
 
 ```rs
 let text = stringify_interval::without_date(
 	chrono::Duration::seconds(1_234_567),
-	DisplayConfigConstant::default(),
-	Text::default(),
+	&DisplayConfigConstant::default(),
+	&Text::default(),
 );
 assert_eq!(text, Ok(String::from("14 days, 6 hours and 56 minutes")));
 ```

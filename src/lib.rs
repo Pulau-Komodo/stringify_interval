@@ -1,6 +1,16 @@
 //! stringify_interval generates a user-friendly string from a `chrono::Duration`, like "1 day, 5 hours and 20 minutes". Years and months can be displayed, but they will need some date as a reference point, because the exact length of a year or month can vary.
 //!
 //! It can be configured to show different units depending on the size of the interval, and to customize the strings used to compose the output.
+//! 
+//! ```
+//! # use stringify_interval::{DisplayConfigConstant, Text};
+//! let text = stringify_interval::without_date(
+//! 	chrono::Duration::seconds(1_234_567),
+//! 	&DisplayConfigConstant::default(),
+//! 	&Text::default(),
+//! );
+//! assert_eq!(text, Ok(String::from("14 days, 6 hours and 56 minutes")));
+//!```
 
 use chrono::{DateTime, Duration, Utc};
 
