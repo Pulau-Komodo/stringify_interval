@@ -1,7 +1,7 @@
 /// A map that stores values and thresholds that determine what value belongs to any given number.
 #[derive(Debug, Clone)]
 pub struct ThresholdMap<T> {
-	thresholds: Vec<u32>,
+	thresholds: Vec<u64>,
 	values: Vec<T>,
 }
 
@@ -32,7 +32,7 @@ impl<T> ThresholdMap<T> {
 	/// ```
 	pub fn from_iter<V: Into<T>>(
 		lowest_value: V,
-		iter: impl IntoIterator<Item = (u32, V)>,
+		iter: impl IntoIterator<Item = (u64, V)>,
 	) -> Option<Self> {
 		let iter = iter.into_iter();
 		let mut map = Self::with_capacity(iter.size_hint().1.unwrap_or(0), lowest_value.into());
@@ -46,7 +46,7 @@ impl<T> ThresholdMap<T> {
 	/// Insert a new threshold and value to apply at and beyond that threshold.
 	///
 	/// Fails if the threshold was already in the map. Returns whether it succeeded.
-	pub fn insert(&mut self, threshold: u32, value: T) -> bool {
+	pub fn insert(&mut self, threshold: u64, value: T) -> bool {
 		let Err(index) = self.get_index(&threshold) else {
 			return false;
 		};
@@ -57,7 +57,7 @@ impl<T> ThresholdMap<T> {
 	/// Pushes a new threshold to the end of the list, and the value to apply at and beyond that threshold.
 	///
 	/// Fails if the threshold was not larger than the last threshold. Returns whether it succeeded.
-	pub fn push(&mut self, threshold: u32, value: T) -> bool {
+	pub fn push(&mut self, threshold: u64, value: T) -> bool {
 		if let Some(last) = self.thresholds.last() {
 			if *last >= threshold {
 				return false;
@@ -68,7 +68,7 @@ impl<T> ThresholdMap<T> {
 		true
 	}
 	/// Gets the value associated with the first threshold crossed, or the first one, since the virtual threshold of 0 is always crossed.
-	pub fn get(&self, key: u32) -> &T {
+	pub fn get(&self, key: u64) -> &T {
 		let index = self
 			.thresholds
 			.iter()
@@ -76,7 +76,7 @@ impl<T> ThresholdMap<T> {
 			.unwrap_or(self.thresholds.len());
 		&self.values[index]
 	}
-	fn get_index(&self, key: &u32) -> Result<usize, usize> {
+	fn get_index(&self, key: &u64) -> Result<usize, usize> {
 		self.thresholds.binary_search(key)
 	}
 }

@@ -47,9 +47,16 @@ pub(crate) fn stringify_interval(
 	counts.split_duration(interval, &enabled);
 	enabled.filter_zeroes(&counts, config)?;
 
-	let mut remaining_elements = enabled.0.iter().filter(|e| **e).count();
+	let mut remaining_elements = enabled.count();
 
-	let mut output = String::new();
+	let mut output = String::with_capacity(calculate_output_length(
+		text,
+		&enabled,
+		&counts,
+		config,
+		remaining_elements,
+	));
+
 	for (&count, labels, config) in counts
 		.0
 		.iter()
@@ -60,9 +67,7 @@ pub(crate) fn stringify_interval(
 	{
 		print_unit(
 			&mut output,
-			count
-				.try_into()
-				.map_err(|_| StringifyError::NumberOutOfRange)?,
+			count,
 			&text.spacer,
 			labels,
 			text.get_joiner(remaining_elements),
@@ -76,7 +81,7 @@ pub(crate) fn stringify_interval(
 
 fn print_unit(
 	output: &mut String,
-	count: u32,
+	count: u64,
 	spacer: &str,
 	label: &ThresholdMap<String>,
 	joiner: &str,
@@ -159,6 +164,9 @@ impl EnabledUnits {
 		}
 
 		Ok(())
+	}
+	fn count(&self) -> usize {
+		self.0.iter().filter(|e| **e).count()
 	}
 }
 
@@ -352,4 +360,38 @@ fn is_one_year_further_closer(
 	in_past: bool,
 ) -> Option<bool> {
 	is_n_months_further_closer(target_date, date_before, in_past, 12)
+}
+
+fn calculate_output_length(
+	text: &Text,
+	enabled: &EnabledUnits,
+	counts: &Counts,
+	config: DisplayConfigRef,
+	element_count: usize,
+) -> usize {
+	let mut length = text.spacer.len() * element_count;
+	if element_count > 1 {
+		length += text.joiner.len() * (element_count - 2);
+		length += text
+			.final_joiner
+			.as_deref()
+			.map_or(text.joiner.len(), |joiner| joiner.len());
+	}
+	for (text, &count, config) in enabled
+		.0
+		.iter()
+		.zip(text.iter_units())
+		.zip(counts.0.iter())
+		.zip(config.iter())
+		.filter_map(|(((e, t), ct), cfg)| e.then_some((t, ct, cfg)))
+	{
+		length += text.get(count).len();
+		length += if count == 0 {
+			1
+		} else {
+			count.ilog10() as usize + 1
+		}
+		.max(config.unwrap().pad as usize);
+	}
+	length
 }
