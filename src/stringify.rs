@@ -342,12 +342,12 @@ fn is_n_months_further_closer(
 	in_past: bool,
 	n: u32,
 ) -> Option<bool> {
-	let month_further = if in_past {
+	let n_months_further = if in_past {
 		date_before.checked_sub_months(Months::new(n))?
 	} else {
 		date_before.checked_add_months(Months::new(n))?
 	};
-	Some((target_date - date_before).abs() > (target_date - month_further).abs())
+	Some((target_date - n_months_further).abs() <= (target_date - date_before).abs())
 }
 
 fn is_one_month_further_closer(

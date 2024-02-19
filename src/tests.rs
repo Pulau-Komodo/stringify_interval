@@ -193,6 +193,78 @@ mod tests {
 			Ok(String::from("19 months"))
 		)
 	}
+	#[test]
+	fn month_just_before_threshold() {
+		assert_eq!(
+			with_date(
+				Duration::days(14) - Duration::seconds(1),
+				date_year_month_day(2001, 2, 1),
+				DisplayConfig::none().with_months(),
+				Text::default(),
+			),
+			Ok(String::from("0 months"))
+		)
+	}
+	#[test]
+	fn month_just_on_threshold() {
+		assert_eq!(
+			with_date(
+				Duration::days(14),
+				date_year_month_day(2001, 2, 1),
+				DisplayConfig::none().with_months(),
+				Text::default(),
+			),
+			Ok(String::from("1 month"))
+		)
+	}
+	#[test]
+	fn month_just_after_threshold() {
+		assert_eq!(
+			with_date(
+				Duration::days(14) + Duration::seconds(1),
+				date_year_month_day(2001, 2, 1),
+				DisplayConfig::none().with_months(),
+				Text::default(),
+			),
+			Ok(String::from("1 month"))
+		)
+	}
+	#[test]
+	fn year_just_before_threshold() {
+		assert_eq!(
+			with_date(
+				Duration::days(366 / 2) - Duration::seconds(1),
+				date_year_month_day(2000, 1, 1),
+				DisplayConfig::none().with_years(),
+				Text::default(),
+			),
+			Ok(String::from("0 years"))
+		)
+	}
+	#[test]
+	fn year_just_on_threshold() {
+		assert_eq!(
+			with_date(
+				Duration::days(366 / 2),
+				date_year_month_day(2000, 1, 1),
+				DisplayConfig::none().with_years(),
+				Text::default(),
+			),
+			Ok(String::from("1 year"))
+		)
+	}
+	#[test]
+	fn year_just_after_threshold() {
+		assert_eq!(
+			with_date(
+				Duration::days(366 / 2) + Duration::seconds(1),
+				date_year_month_day(2000, 1, 1),
+				DisplayConfig::none().with_years(),
+				Text::default(),
+			),
+			Ok(String::from("1 year"))
+		)
+	}
 
 	fn config_with_zeroes() -> DisplayConfig {
 		DisplayConfig {
