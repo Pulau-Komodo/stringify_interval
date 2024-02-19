@@ -2,6 +2,11 @@ use std::ops::{Range, RangeFrom};
 
 use crate::threshold_map::ThresholdMap;
 
+/// All the strings that may be used to compose the final output. This owns the `String`s, so if it's performance-sensitive, you will want to reuse an instance of `Text`.
+/// 
+/// Each of the units uses a `ThresholdMap<String>`, which allows you to have different text for different counts, like for implementing plurals.
+/// 
+/// By default, `joiner`, `final_joiner` and `spacer` are `", "`, `Some(" and ")` and `" "`, respectively (except `String`s).
 #[derive(Debug, Clone)]
 pub struct Text {
 	pub years: ThresholdMap<String>,
@@ -13,7 +18,7 @@ pub struct Text {
 	pub seconds: ThresholdMap<String>,
 	/// In `"14 days[, ]6 hours and 56 minutes"`, the bracketed part.
 	pub joiner: String,
-	/// In `"14 days, 6 hours[ and ]56 minutes"`, the bracketed part.
+	/// In `"14 days, 6 hours[ and ]56 minutes"`, the bracketed part. If none, it will use the regular joiner.
 	pub final_joiner: Option<String>,
 	/// In `"14[ ]days, 6[ ]hours and 56[ ]minutes"`, the bracketed parts.
 	pub spacer: String,
