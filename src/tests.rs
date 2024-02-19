@@ -379,4 +379,14 @@ mod tests {
 			Ok(String::from("0 years"))
 		)
 	}
+
+	#[test]
+	fn readme_examples() {
+		let text = crate::without_date(
+			chrono::Duration::seconds(1_234_567),
+			DisplayConfigConstant::default(),
+			Text::default(),
+		);
+		assert_eq!(text, Ok(String::from("14 days, 6 hours and 56 minutes")));
+	}
 }

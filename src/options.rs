@@ -11,11 +11,15 @@ pub struct Text {
 	pub hours: ThresholdMap<String>,
 	pub minutes: ThresholdMap<String>,
 	pub seconds: ThresholdMap<String>,
+	/// In `"14 days[, ]6 hours and 56 minutes"`, the bracketed part.
 	pub joiner: String,
+	/// In `"14 days, 6 hours[ and ]56 minutes"`, the bracketed part.
 	pub final_joiner: Option<String>,
+	/// In `"14[ ]days, 6[ ]hours and 56[ ]minutes"`, the bracketed parts.
 	pub spacer: String,
 }
 
+/// The strings that are used in building the output. These can be adjusted to change the format or do some degree of localisation.
 impl Text {
 	pub(crate) fn get_joiner(&self, remaining_elements: usize) -> &str {
 		match self.final_joiner.as_deref() {
@@ -55,6 +59,15 @@ impl Default for Text {
 	}
 }
 
+/// The range of values a unit should be displayed at, expressed in that unit. It implements `From<Range<u64>>` and `From<RangeFrom<u64>>`.
+///
+/// ```
+/// # use stringify_interval::DisplayRange;
+/// let my_range: DisplayRange = (0..10).into();
+/// assert!(!my_range.contains(15_u64));
+/// let my_half_open_range: DisplayRange = (3..).into();
+/// assert!(my_half_open_range.contains(15_u64));
+/// ```
 #[derive(Debug, Clone, Copy)]
 pub struct DisplayRange {
 	lower: u64,
@@ -86,6 +99,7 @@ impl From<RangeFrom<u64>> for DisplayRange {
 	}
 }
 
+/// For an individual unit, the display range, the number of digits it should be padded to, and whether it should display even when it's zero.
 #[derive(Debug, Clone, Copy)]
 pub struct DisplaySettings {
 	pub range: DisplayRange,
