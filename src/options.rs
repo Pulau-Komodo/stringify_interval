@@ -264,81 +264,59 @@ impl From<DisplayConfigConstant> for DisplayConfig {
 	}
 }
 
-pub(crate) mod internal {
-	use crate::DisplaySettings;
+#[derive(Debug, Clone, Copy)]
+pub(crate) struct DisplayConfigRef<'l> {
+	pub(crate) years: &'l Option<DisplaySettings>,
+	pub(crate) months: &'l Option<DisplaySettings>,
+	pub(crate) weeks: &'l Option<DisplaySettings>,
+	pub(crate) days: &'l Option<DisplaySettings>,
+	pub(crate) hours: &'l Option<DisplaySettings>,
+	pub(crate) minutes: &'l Option<DisplaySettings>,
+	pub(crate) seconds: &'l Option<DisplaySettings>,
+}
 
-	#[derive(Debug, Clone, Copy)]
-	pub(crate) struct DisplayConfigInconstant<'l> {
-		pub(crate) years: &'l Option<DisplaySettings>,
-		pub(crate) months: &'l Option<DisplaySettings>,
+impl<'l> DisplayConfigRef<'l> {
+	pub(crate) fn has_inconstant_enabled(&self) -> bool {
+		self.years.is_some() || self.months.is_some()
 	}
-
-	#[derive(Debug, Clone, Copy)]
-	pub(crate) struct DisplayConfigConstant<'l> {
-		pub weeks: &'l Option<DisplaySettings>,
-		pub days: &'l Option<DisplaySettings>,
-		pub hours: &'l Option<DisplaySettings>,
-		pub minutes: &'l Option<DisplaySettings>,
-		pub seconds: &'l Option<DisplaySettings>,
+	pub(crate) fn iter(&self) -> impl Iterator<Item = &Option<DisplaySettings>> {
+		[
+			self.years,
+			self.months,
+			self.weeks,
+			self.days,
+			self.hours,
+			self.minutes,
+			self.seconds,
+		]
+		.into_iter()
 	}
+}
 
-	#[derive(Debug, Clone, Copy)]
-	pub(crate) struct DisplayConfig<'l> {
-		pub(crate) inconstant: DisplayConfigInconstant<'l>,
-		pub(crate) constant: DisplayConfigConstant<'l>,
-	}
-
-	impl<'l> DisplayConfig<'l> {
-		pub(crate) fn has_inconstant_enabled(&self) -> bool {
-			self.inconstant.years.is_some() || self.inconstant.months.is_some()
-		}
-		pub(crate) fn iter(&self) -> impl Iterator<Item = &Option<DisplaySettings>> {
-			[
-				self.inconstant.years,
-				self.inconstant.months,
-				self.constant.weeks,
-				self.constant.days,
-				self.constant.hours,
-				self.constant.minutes,
-				self.constant.seconds,
-			]
-			.into_iter()
-		}
-	}
-
-	impl<'l> From<&'l super::DisplayConfigConstant> for DisplayConfig<'l> {
-		fn from(value: &'l super::DisplayConfigConstant) -> Self {
-			Self {
-				inconstant: DisplayConfigInconstant {
-					years: &None,
-					months: &None,
-				},
-				constant: DisplayConfigConstant {
-					weeks: &value.weeks,
-					days: &value.days,
-					hours: &value.hours,
-					minutes: &value.minutes,
-					seconds: &value.seconds,
-				},
-			}
+impl<'l> From<&'l DisplayConfigConstant> for DisplayConfigRef<'l> {
+	fn from(value: &'l DisplayConfigConstant) -> Self {
+		Self {
+			years: &None,
+			months: &None,
+			weeks: &value.weeks,
+			days: &value.days,
+			hours: &value.hours,
+			minutes: &value.minutes,
+			seconds: &value.seconds,
 		}
 	}
+}
 
-	impl<'l> From<&'l super::DisplayConfig> for DisplayConfig<'l> {
-		fn from(value: &'l super::DisplayConfig) -> Self {
-			Self {
-				inconstant: DisplayConfigInconstant {
-					years: &value.years,
-					months: &value.months,
-				},
-				constant: DisplayConfigConstant {
-					weeks: &value.weeks,
-					days: &value.days,
-					hours: &value.hours,
-					minutes: &value.minutes,
-					seconds: &value.seconds,
-				},
-			}
+impl<'l> From<&'l DisplayConfig> for DisplayConfigRef<'l> {
+	fn from(value: &'l DisplayConfig) -> Self {
+		Self {
+			years: &value.years,
+			months: &value.months,
+			weeks: &value.weeks,
+			days: &value.days,
+			hours: &value.hours,
+			minutes: &value.minutes,
+			seconds: &value.seconds,
 		}
 	}
 }

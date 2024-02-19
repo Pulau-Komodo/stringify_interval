@@ -3,20 +3,20 @@ use std::fmt::Write;
 use chrono::{DateTime, Datelike, Duration, Months, Utc};
 
 use crate::errors::StringifyError;
-use crate::options::{internal, Text};
+use crate::options::{DisplayConfigRef, Text};
 use crate::threshold_map::ThresholdMap;
 use crate::util::UnitValues;
 
 pub(crate) fn stringify_interval(
 	mut interval: Duration,
 	get_date: Option<Box<dyn FnOnce() -> DateTime<Utc>>>,
-	config: internal::DisplayConfig,
+	config: DisplayConfigRef,
 	text: &Text,
 ) -> Result<String, StringifyError> {
 	let in_past = interval.num_seconds() < 0;
 	interval = interval.abs();
 
-	let mut enabled = EnabledUnits::from_interval_and_display_config(interval, config.constant);
+	let mut enabled = EnabledUnits::from_interval_and_display_config(interval, config);
 
 	let round_to_months_or_years =
 		if let Some(seconds) = enabled.round_to_smallest(interval.num_seconds() as u64) {
@@ -30,14 +30,9 @@ pub(crate) fn stringify_interval(
 
 	if config.has_inconstant_enabled() {
 		let date = get_date.unwrap()();
-		let (years, months, remainder) = get_years_months_remainder(
-			date,
-			interval,
-			in_past,
-			round_to_months_or_years,
-			config.inconstant,
-		)
-		.ok_or(StringifyError::NumberOutOfRange)?;
+		let (years, months, remainder) =
+			get_years_months_remainder(date, interval, in_past, round_to_months_or_years, config)
+				.ok_or(StringifyError::NumberOutOfRange)?;
 		if let Some(years) = years {
 			enabled.0.years = true;
 			counts.0.years = years;
@@ -103,10 +98,7 @@ fn print_unit(
 struct EnabledUnits(UnitValues<bool>);
 
 impl EnabledUnits {
-	fn from_interval_and_display_config(
-		interval: Duration,
-		config: internal::DisplayConfigConstant,
-	) -> Self {
+	fn from_interval_and_display_config(interval: Duration, config: DisplayConfigRef) -> Self {
 		Self(UnitValues {
 			years: false,
 			months: false,
@@ -147,7 +139,7 @@ impl EnabledUnits {
 	fn filter_zeroes(
 		&mut self,
 		counts: &Counts,
-		config: internal::DisplayConfig,
+		config: DisplayConfigRef,
 	) -> Result<(), StringifyError> {
 		let smallest_enabled = self
 			.0
@@ -222,7 +214,7 @@ fn get_years_months_remainder(
 	interval: Duration,
 	in_past: bool,
 	should_round: bool,
-	config: internal::DisplayConfigInconstant,
+	config: DisplayConfigRef,
 ) -> Option<(Option<u64>, Option<u64>, Duration)> {
 	let target_date = if in_past {
 		start_date.checked_sub_signed(interval)?
