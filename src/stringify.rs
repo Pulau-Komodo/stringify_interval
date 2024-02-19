@@ -3,7 +3,7 @@ use std::fmt::Write;
 use chrono::{DateTime, Datelike, Duration, Months, Utc};
 
 use crate::errors::StringifyError;
-use crate::options::{DisplayConfigRef, Text};
+use crate::options::{DisplayConfigRef, OptionalDisplaySettings, Text};
 use crate::threshold_map::ThresholdMap;
 use crate::util::UnitValues;
 
@@ -102,21 +102,11 @@ impl EnabledUnits {
 		Self(UnitValues {
 			years: false,
 			months: false,
-			weeks: config
-				.weeks
-				.is_some_and(|weeks| weeks.range.contains(interval.num_weeks() as u64)),
-			days: config
-				.days
-				.is_some_and(|days| days.range.contains(interval.num_days() as u64)),
-			hours: config
-				.hours
-				.is_some_and(|hours| hours.range.contains(interval.num_hours() as u64)),
-			minutes: config
-				.minutes
-				.is_some_and(|minutes| minutes.range.contains(interval.num_minutes() as u64)),
-			seconds: config
-				.seconds
-				.is_some_and(|seconds| seconds.range.contains(interval.num_seconds() as u64)),
+			weeks: config.weeks.range_contains(interval.num_weeks() as u64),
+			days: config.days.range_contains(interval.num_days() as u64),
+			hours: config.hours.range_contains(interval.num_hours() as u64),
+			minutes: config.minutes.range_contains(interval.num_minutes() as u64),
+			seconds: config.seconds.range_contains(interval.num_seconds() as u64),
 		})
 	}
 	fn round_to_smallest(&self, seconds: u64) -> Option<u64> {
@@ -252,10 +242,8 @@ fn get_years_months_remainder(
 
 	let years = months / 12;
 
-	let enable_years = config.years.is_some_and(|year| year.range.contains(years));
-	let enable_months = config
-		.months
-		.is_some_and(|month| month.range.contains(months));
+	let enable_years = config.years.range_contains(years);
+	let enable_months = config.months.range_contains(months);
 
 	let (mut output_years, mut output_months, mut output_remainder) = (None, None, interval);
 

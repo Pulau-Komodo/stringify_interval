@@ -117,6 +117,16 @@ impl DisplaySettings {
 	}
 }
 
+pub(crate) trait OptionalDisplaySettings {
+	fn range_contains(&self, number: impl Into<u64>) -> bool;
+}
+
+impl OptionalDisplaySettings for Option<DisplaySettings> {
+	fn range_contains(&self, number: impl Into<u64>) -> bool {
+		self.is_some_and(|config| config.range.contains(number))
+	}
+}
+
 /// The display settings for each unit, including years and months.
 #[derive(Debug, Clone)]
 pub struct DisplayConfig {
