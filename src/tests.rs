@@ -20,8 +20,8 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::minutes(2),
-				DisplayConfigConstant::default(),
-				Text::default(),
+				&DisplayConfigConstant::default(),
+				&Text::default(),
 			),
 			Ok(String::from("2 minutes"))
 		);
@@ -31,8 +31,8 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(500),
-				DisplayConfigConstant::default(),
-				Text::default(),
+				&DisplayConfigConstant::default(),
+				&Text::default(),
 			),
 			Ok(String::from("8 minutes and 20 seconds"))
 		);
@@ -42,8 +42,8 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(-5_000),
-				DisplayConfigConstant::default(),
-				Text::default(),
+				&DisplayConfigConstant::default(),
+				&Text::default(),
 			),
 			Ok(String::from("1 hour and 23 minutes"))
 		);
@@ -53,8 +53,8 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(50_000),
-				DisplayConfigConstant::default(),
-				Text::default(),
+				&DisplayConfigConstant::default(),
+				&Text::default(),
 			),
 			Ok(String::from("13 hours and 53 minutes"))
 		);
@@ -64,8 +64,8 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(-500_000),
-				DisplayConfigConstant::default(),
-				Text::default(),
+				&DisplayConfigConstant::default(),
+				&Text::default(),
 			),
 			Ok(String::from("5 days, 18 hours and 53 minutes"))
 		);
@@ -75,8 +75,8 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(5_000_000),
-				DisplayConfigConstant::default(),
-				Text::default(),
+				&DisplayConfigConstant::default(),
+				&Text::default(),
 			),
 			Ok(String::from("57 days, 20 hours and 53 minutes"))
 		);
@@ -86,8 +86,8 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(50_000_000),
-				DisplayConfigConstant::default(),
-				Text::default(),
+				&DisplayConfigConstant::default(),
+				&Text::default(),
 			),
 			Ok(String::from("578 days, 16 hours and 53 minutes"))
 		);
@@ -97,8 +97,8 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(-50_000_000),
-				DisplayConfigConstant::default(),
-				Text::default(),
+				&DisplayConfigConstant::default(),
+				&Text::default(),
 			),
 			Ok(String::from("578 days, 16 hours and 53 minutes"))
 		);
@@ -112,8 +112,8 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(-5_000_000),
-				config_weeks_seconds(),
-				Text::default(),
+				&config_weeks_seconds(),
+				&Text::default(),
 			),
 			Ok(String::from("8 weeks and 161600 seconds"))
 		);
@@ -133,8 +133,8 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::seconds(-5_000_000),
-				config_weeks_minutes_seconds(),
-				Text::default(),
+				&config_weeks_minutes_seconds(),
+				&Text::default(),
 			),
 			Ok(String::from("8 weeks, 2693 minutes and 20 seconds"))
 		);
@@ -146,8 +146,8 @@ mod tests {
 			with_date(
 				Duration::seconds(50_000_000),
 				date_year_month_day(1950, 1, 1),
-				DisplayConfig::default(),
-				Text::default(),
+				&DisplayConfig::default(),
+				&Text::default(),
 			),
 			Ok(String::from(
 				"1 year, 7 months, 1 day, 16 hours and 53 minutes"
@@ -160,8 +160,8 @@ mod tests {
 			with_date(
 				Duration::seconds(-50_000_000),
 				date_year_month_day(1950, 1, 1),
-				DisplayConfig::default(),
-				Text::default(),
+				&DisplayConfig::default(),
+				&Text::default(),
 			),
 			Ok(String::from(
 				"1 year, 6 months, 29 days, 16 hours and 53 minutes"
@@ -175,8 +175,8 @@ mod tests {
 			with_date(
 				Duration::seconds(50_000_000),
 				date_year_month_day(2020, 1, 1),
-				DisplayConfig::none().with_months(),
-				Text::default(),
+				&DisplayConfig::none().with_months(),
+				&Text::default(),
 			),
 			Ok(String::from("19 months"))
 		)
@@ -187,8 +187,8 @@ mod tests {
 			with_date(
 				Duration::seconds(-50_000_000),
 				date_year_month_day(2020, 1, 1),
-				DisplayConfig::none().with_months(),
-				Text::default(),
+				&DisplayConfig::none().with_months(),
+				&Text::default(),
 			),
 			Ok(String::from("19 months"))
 		)
@@ -199,8 +199,8 @@ mod tests {
 			with_date(
 				Duration::days(14) - Duration::seconds(1),
 				date_year_month_day(2001, 2, 1),
-				DisplayConfig::none().with_months(),
-				Text::default(),
+				&DisplayConfig::none().with_months(),
+				&Text::default(),
 			),
 			Ok(String::from("0 months"))
 		)
@@ -211,8 +211,8 @@ mod tests {
 			with_date(
 				Duration::days(14),
 				date_year_month_day(2001, 2, 1),
-				DisplayConfig::none().with_months(),
-				Text::default(),
+				&DisplayConfig::none().with_months(),
+				&Text::default(),
 			),
 			Ok(String::from("1 month"))
 		)
@@ -223,8 +223,8 @@ mod tests {
 			with_date(
 				Duration::days(14) + Duration::seconds(1),
 				date_year_month_day(2001, 2, 1),
-				DisplayConfig::none().with_months(),
-				Text::default(),
+				&DisplayConfig::none().with_months(),
+				&Text::default(),
 			),
 			Ok(String::from("1 month"))
 		)
@@ -235,8 +235,8 @@ mod tests {
 			with_date(
 				Duration::days(366 / 2) - Duration::seconds(1),
 				date_year_month_day(2000, 1, 1),
-				DisplayConfig::none().with_years(),
-				Text::default(),
+				&DisplayConfig::none().with_years(),
+				&Text::default(),
 			),
 			Ok(String::from("0 years"))
 		)
@@ -247,8 +247,8 @@ mod tests {
 			with_date(
 				Duration::days(366 / 2),
 				date_year_month_day(2000, 1, 1),
-				DisplayConfig::none().with_years(),
-				Text::default(),
+				&DisplayConfig::none().with_years(),
+				&Text::default(),
 			),
 			Ok(String::from("1 year"))
 		)
@@ -259,8 +259,8 @@ mod tests {
 			with_date(
 				Duration::days(366 / 2) + Duration::seconds(1),
 				date_year_month_day(2000, 1, 1),
-				DisplayConfig::none().with_years(),
-				Text::default(),
+				&DisplayConfig::none().with_years(),
+				&Text::default(),
 			),
 			Ok(String::from("1 year"))
 		)
@@ -283,8 +283,8 @@ mod tests {
 			with_date(
 				Duration::days(15),
 				date_year_month_day(2020, 1, 1),
-				config_with_zeroes(),
-				Text::default(),
+				&config_with_zeroes(),
+				&Text::default(),
 			),
 			Ok(String::from(
 				"0 years, 0 months, 15 days, 0 hours and 0 minutes"
@@ -297,8 +297,8 @@ mod tests {
 			with_date(
 				Duration::seconds(32918400),
 				date_year_month_day(2020, 1, 1),
-				config_with_zeroes(),
-				Text::default(),
+				&config_with_zeroes(),
+				&Text::default(),
 			),
 			Ok(String::from(
 				"1 year, 0 months, 15 days, 0 hours and 0 minutes"
@@ -330,8 +330,8 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::days(3) + Duration::hours(2) + Duration::seconds(1),
-				config_clocklike(),
-				text_clocklike(),
+				&config_clocklike(),
+				&text_clocklike(),
 			),
 			Ok(String::from("74:00:01"))
 		)
@@ -339,7 +339,7 @@ mod tests {
 	#[test]
 	fn clocklike_minute() {
 		assert_eq!(
-			without_date(Duration::minutes(1), config_clocklike(), text_clocklike(),),
+			without_date(Duration::minutes(1), &config_clocklike(), &text_clocklike(),),
 			Ok(String::from("00:01:00"))
 		)
 	}
@@ -349,8 +349,8 @@ mod tests {
 		assert_eq!(
 			without_date(
 				Duration::zero(),
-				DisplayConfigConstant::default(),
-				Text::default()
+				&DisplayConfigConstant::default(),
+				&Text::default(),
 			),
 			Ok(String::from("0 seconds"))
 		)
@@ -361,8 +361,8 @@ mod tests {
 			with_date(
 				Duration::zero(),
 				date_year_month_day(2000, 1, 1),
-				DisplayConfig::none().with_months(),
-				Text::default()
+				&DisplayConfig::none().with_months(),
+				&Text::default(),
 			),
 			Ok(String::from("0 months"))
 		)
@@ -373,8 +373,8 @@ mod tests {
 			with_date(
 				Duration::zero(),
 				date_year_month_day(2000, 1, 1),
-				DisplayConfig::none().with_years(),
-				Text::default()
+				&DisplayConfig::none().with_years(),
+				&Text::default(),
 			),
 			Ok(String::from("0 years"))
 		)
@@ -384,8 +384,8 @@ mod tests {
 	fn readme_examples() {
 		let text = crate::without_date(
 			chrono::Duration::seconds(1_234_567),
-			DisplayConfigConstant::default(),
-			Text::default(),
+			&DisplayConfigConstant::default(),
+			&Text::default(),
 		);
 		assert_eq!(text, Ok(String::from("14 days, 6 hours and 56 minutes")));
 	}
